@@ -41,11 +41,29 @@ final public class Levenshtein {
     public static List<AtomicOperation> atomicOperations(String s1, String s2) {
         int row = s1.length() + 1;
         int column = s2.length() + 1;
+        int[][] matrix = matrix(s1, s2);
         List<AtomicOperation> atomics = new ArrayList<>();
-        Operation lastOperation = new Operation();
+
+        while (row > 0 && column > 0) {
+            if( matrix[row][column] ==  matrix[row-1][column-1]){
+                row --;
+                column--;
+            } else if ( matrix[row][column]  >  matrix[row-1][column-1]) {
+                atomics.add(new AtomicOperation(OperationType.substitution, row, String.valueOf(s1.charAt(row-1))));
+                row --;
+                column--;
+            }else if(matrix[row][column]  >  matrix[row-1][column]) {
+                atomics.add(new AtomicOperation(OperationType.insert, row, String.valueOf(s1.charAt(row-1))));
+                row --;
+            }else if(matrix[row][column]  >  matrix[row][column-1]) {
+                atomics.add(new AtomicOperation(OperationType.delete, row, String.valueOf(s2.charAt(column-1))));
+                column --;}
+            else{
+                throw new IllegalStateException("Malformed Levenshtein matrix.");
+            }
+        }
 
         return atomics;
-
     }
 
     public static List<Operation> operationsList(String s1, String s2) {
