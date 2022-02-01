@@ -29,7 +29,6 @@ final public class Levenshtein {
                 );
             }
         }
-
         return matrix;
     }
 
@@ -69,7 +68,19 @@ final public class Levenshtein {
     public static List<Operation> operationsList(String s1, String s2) {
         var atomicOps = atomicOperations(s1, s2);
         List<Operation> operations = new ArrayList<>();
+        for (AtomicOperation atomic : atomicOps) {
+            if (operations.size() == 0) {
+                operations.add(Operation.fromAtomic(atomic));
+                continue;
+            }
 
+            var lastOp = operations.get(operations.size() - 1);
+            if (lastOp.isAppendable(atomic)) {
+                lastOp.addAtomic(atomic);
+            } else {
+               operations.add(Operation.fromAtomic(atomic));
+            }
+        }
         return operations;
     }
 }
