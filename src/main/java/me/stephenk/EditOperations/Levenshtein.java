@@ -65,27 +65,14 @@ final public class Levenshtein {
                 row--;
                 column--;
             } else if (matrix[row][column] > matrix[row - 1][column - 1]) {
-                atomics.add(
-                        new AtomicOperation(OperationType.substitution,
-                                row,
-                                String.valueOf(s1.charAt(row - 1)))
-                );
+                atomics.add(AtomicOperation.newSubstitution(row, s1.charAt(row - 1)));
                 row--;
                 column--;
             } else if (matrix[row][column] > matrix[row - 1][column]) {
-                atomics.add(
-                        new AtomicOperation(OperationType.insert,
-                                row,
-                                String.valueOf(s1.charAt(row - 1)))
-                );
+                atomics.add(AtomicOperation.newInsert(row, s1.charAt(row - 1)));
                 row--;
             } else if (matrix[row][column] > matrix[row][column - 1]) {
-                atomics.add(
-                        new AtomicOperation(
-                                OperationType.delete,
-                                row,
-                                String.valueOf(s2.charAt(column - 1)))
-                );
+                atomics.add(AtomicOperation.newDelete(row, s2.charAt(column - 1)));
                 column--;
             } else {
                 throw new IllegalStateException("Malformed Levenshtein matrix.");
