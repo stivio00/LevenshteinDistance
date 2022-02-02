@@ -3,28 +3,45 @@ package me.stephenk.EditOperations;
 import java.util.ArrayList;
 import java.util.List;
 
+import static java.lang.Math.max;
+import static java.lang.Math.min;
+
 final public class Levenshtein {
 
     public static int min3(int a, int b, int c) {
-        return Math.min(Math.min(a, b), c);
+        return min(min(a, b), c);
     }
 
-    public static int[][] matrix(String s1, String s2) {
+    public static float min3(float a, float b, float c) {
+        return min(min(a, b), c);
+    }
+
+    public static float[][] matrix(String s1, String s2) {
+        return matrix(s1, s2, 1.0f, 1.0f, 1.0f);
+    }
+
+    public static float[][] matrix(String s1, String s2,
+                                   float cost_insert,
+                                   float cost_delete,
+                                   float cost_subst) {
+
         int rows = s1.length() + 1;
         int columns = s2.length() + 1;
 
-        int[][] matrix = new int[rows][columns];
+        float[][] matrix = new float[rows][columns];
 
         for (int row = 0; row < rows; row++) {
             for (int column = 0; column < columns; column++) {
-                if (Math.min(row, column) == 0) {
-                    matrix[row][column] = Math.max(row, column);
+                if (min(row, column) == 0) {
+                    matrix[row][column] = max(row, column);
                     continue;
                 }
-                int value = s1.charAt(row - 1) == s2.charAt(column - 1) ? 0 : 1;
+
+                float value = s1.charAt(row - 1) == s2.charAt(column - 1)
+                        ? 0.0f : cost_subst;
                 matrix[row][column] = min3(
-                        matrix[row - 1][column] + 1,
-                        matrix[row][column - 1] + 1,
+                        matrix[row - 1][column] + cost_insert,
+                        matrix[row][column - 1] + cost_delete,
                         matrix[row - 1][column - 1] + value
                 );
             }
@@ -32,7 +49,7 @@ final public class Levenshtein {
         return matrix;
     }
 
-    public static int distance(String s1, String s2) {
+    public static float distance(String s1, String s2) {
         var levenshteinMatrix = matrix(s1, s2);
         return levenshteinMatrix[s1.length()][s2.length()];
     }
@@ -40,7 +57,7 @@ final public class Levenshtein {
     public static List<AtomicOperation> atomicOperations(String s1, String s2) {
         int row = s1.length() + 1;
         int column = s2.length() + 1;
-        int[][] matrix = matrix(s1, s2);
+        float[][] matrix = matrix(s1, s2);
         List<AtomicOperation> atomics = new ArrayList<>();
 
         while (row > 0 && column > 0) {
@@ -48,14 +65,27 @@ final public class Levenshtein {
                 row--;
                 column--;
             } else if (matrix[row][column] > matrix[row - 1][column - 1]) {
-                atomics.add(new AtomicOperation(OperationType.substitution, row, String.valueOf(s1.charAt(row - 1))));
+                atomics.add(
+                        new AtomicOperation(OperationType.substitution,
+                                row,
+                                String.valueOf(s1.charAt(row - 1)))
+                );
                 row--;
                 column--;
             } else if (matrix[row][column] > matrix[row - 1][column]) {
-                atomics.add(new AtomicOperation(OperationType.insert, row, String.valueOf(s1.charAt(row - 1))));
+                atomics.add(
+                        new AtomicOperation(OperationType.insert,
+                                row,
+                                String.valueOf(s1.charAt(row - 1)))
+                );
                 row--;
             } else if (matrix[row][column] > matrix[row][column - 1]) {
-                atomics.add(new AtomicOperation(OperationType.delete, row, String.valueOf(s2.charAt(column - 1))));
+                atomics.add(
+                        new AtomicOperation(
+                                OperationType.delete,
+                                row,
+                                String.valueOf(s2.charAt(column - 1)))
+                );
                 column--;
             } else {
                 throw new IllegalStateException("Malformed Levenshtein matrix.");
@@ -78,7 +108,7 @@ final public class Levenshtein {
             if (lastOp.isAppendable(atomic)) {
                 lastOp.addAtomic(atomic);
             } else {
-               operations.add(Operation.fromAtomic(atomic));
+                operations.add(Operation.fromAtomic(atomic));
             }
         }
         return operations;
