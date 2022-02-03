@@ -70,4 +70,14 @@ public class Operation {
     public boolean isAppendable(AtomicOperation atomic){
         return type == atomic.type() && (index + length) == atomic.index();
     }
+
+    @Override
+    public String toString() {
+        return "Operation{" +
+                "type=" + type +
+                ", index=" + index +
+                ", length=" + length +
+                ", value='" + value + '\'' +
+                '}';
+    }
 }

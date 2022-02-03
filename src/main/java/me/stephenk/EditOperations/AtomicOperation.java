@@ -27,4 +27,13 @@ public record AtomicOperation(OperationType type, int index, String value) {
         String value = String.valueOf(valueChar);
         return new AtomicOperation(OperationType.substitution, index, value);
     }
+
+    @Override
+    public String toString() {
+        return "AtomicOperation{" +
+                "type=" + type +
+                ", index=" + index +
+                ", value='" + value + '\'' +
+                '}';
+    }
 }
