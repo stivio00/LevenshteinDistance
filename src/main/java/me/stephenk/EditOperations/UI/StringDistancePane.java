@@ -5,7 +5,6 @@ import me.stephenk.EditOperations.Levenshtein;
 import me.stephenk.EditOperations.Operation;
 
 import javax.swing.*;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.util.Arrays;

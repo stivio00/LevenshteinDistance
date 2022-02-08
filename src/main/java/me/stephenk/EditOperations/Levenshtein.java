@@ -79,7 +79,6 @@ final public class Levenshtein {
                 throw new IllegalStateException("Malformed Levenshtein matrix.");
             }
         }
-
         Collections.reverse(atomics);
         return atomics;
     }
