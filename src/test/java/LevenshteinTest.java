@@ -54,6 +54,11 @@ public class LevenshteinTest {
     }
 
     @Test
+    public void failingTest(){
+        Assertions.assertEquals(1,2);
+    }
+
+    @Test
     public void atomicOperationsTest() {
         String input_1 = "hoLa";
         String input_2 = "hola";
